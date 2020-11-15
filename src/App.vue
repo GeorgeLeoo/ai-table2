@@ -86,6 +86,7 @@ export default {
         initRows: 5,
         columns,
         operable: true,
+        showSummary: true,
         data: [
           {
             abstract: 'nm',

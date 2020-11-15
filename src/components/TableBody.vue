@@ -7,7 +7,7 @@
     :style="{width: layout.tableWidth}"
   >
     <colgroup>
-      <col v-if="operable" width="30">
+      <col v-if="operable" width="30px">
       <col
         v-for="row in columns"
         :key="row.label"
@@ -47,7 +47,7 @@
           v-if="cellClickIndex.rowIndex === rowIndex && cellClickIndex.columnIndex === columnIndex"
           :class="[
             'ai-table__body__input',
-            {'ai-table__body__input-money': columns[columnIndex].type === TABLE_CELL_TYPE_MAP.MONEY},
+            {'ai-table__input-money': columns[columnIndex].type === TABLE_CELL_TYPE_MAP.MONEY},
             {'pr30': columns[columnIndex].tip},
             ]"
           ref="ai-table__body__input"
@@ -55,8 +55,8 @@
           type="text"
           :value="column"
           :style="{width: columns[columnIndex].width, display: column ? 'table-cell' : 'block'}"
-          @keyup="handlerCellInputKeyup($event, columns[columnIndex].type)"
           @keydown="handlerCellInputKeydown($event, columns[columnIndex].type)"
+          @keyup="handlerCellInputKeyup($event, columns[columnIndex].type)"
           @keyup.enter="handlerCellInputEnter($event, columns[columnIndex].type)"
         >
 
@@ -65,9 +65,9 @@
           <div
             v-if="columns[columnIndex].type !== TABLE_CELL_TYPE_MAP.MONEY"
             :class="[
-            'ai-table__cell',
-            {'ai-table__cell-pr30': columns[columnIndex].tip},
-            ]"
+              'ai-table__cell',
+              {'ai-table__cell-pr30': columns[columnIndex].tip},
+              ]"
             :style="{width: columns[columnIndex].width, display: column ? 'table-cell' : 'block'}">
             {{column}}
           </div>
@@ -80,11 +80,14 @@
             {'money-cell': columns[columnIndex].type === TABLE_CELL_TYPE_MAP.MONEY}
           ]"
             :style="{width: columns[columnIndex].width, display: column ? 'table-cell' : 'block'}">
-            <div :class="[
-            'ai-table__money-text',
-             {'letter-space-none': column.length > 11},
-             {'red': column.includes('-')}
-            ]">
+            <div
+              :class="[
+                'ai-table__money-text',
+                 {'letter-space-none': column.length > 11},
+                 {'red': column.includes('-')}
+                ]"
+              :style="{width: columns[columnIndex].width, display: column ? 'table-cell' : 'block'}"
+            >
               {{column | formatMoney}}
             </div>
           </div>
@@ -102,7 +105,7 @@
   </table>
 </template>
 <script>
-import { MONEY_UNIT_LIST, TABLE_CELL_TYPE_MAP } from '../constant'
+import { KEY_TYPE, MONEY_UNIT_LIST, TABLE_CELL_TYPE_MAP } from '../constant'
 import { mapStates } from '../store/helper'
 import { convertToRows, getColumnsByColSpan, getInitObject } from '../utils'
 import { isArray } from '../utils/dataType'
@@ -139,10 +142,7 @@ export default {
       operable: 'operable',
       rowMouseEnterIndex: 'rowMouseEnterIndex',
       cellClickIndex: 'cellClickIndex',
-    }),
-    // tableData() {
-    //   return this.getTableData()
-    // }
+    })
   },
   watch: {
     originColumns: {
@@ -176,7 +176,7 @@ export default {
     })
   },
   methods: {
-    setRowDataMap(data) {
+    setRowDataMap (data) {
       let result = {}
       if (isArray(data) && data.length > 0) {
         const keys = Object.keys(data[0])
@@ -219,23 +219,40 @@ export default {
       })
     },
     handlerCellInputEnter (e, type) {
+      let value = e.target.value
+      let val = ''
       if (type === this.TABLE_CELL_TYPE_MAP.MONEY) {
-        let val = e.target.value
 
-        if (!val.includes('.')) {
-          val += '.00'
+        val = Number(value).toFixed(2)
+
+        const splits = val.split('.')
+
+        // 对 0 的处理
+        if (splits[0] === '0') {
+          val = splits[1]
+          if (val === '00') {
+            val = '0'
+          }
         }
 
-        const { rowIndex, columnIndex } = this.cellClickIndex
-        this.store.states.data[rowIndex][this.rowDataMap[columnIndex]] = val
+      } else {
+        val = value
       }
+      const { rowIndex, columnIndex } = this.cellClickIndex
+      this.store.states.data[rowIndex][this.rowDataMap[columnIndex]] = val
       this.store.states.cellClickIndex = { rowIndex: -1, columnIndex: -1 }
     },
-    handlerCellInputKeydown(e, type) {
-      const whiteList = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '.', 'Backspace']
+    handlerCellInputKeydown (e, type) {
+      this.inputInterception(e, type, KEY_TYPE.DOWN)
+    },
+    handlerCellInputKeyup (e, type) {
+      this.inputInterception(e, type, KEY_TYPE.UP)
+    },
+    inputInterception(e, type, keyType) {
+      const whiteList = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '.', 'Backspace']
       const BackspaceKeyCode = 8
 
-      const {key, keyCode, target} = e
+      const { key, keyCode, target } = e
       let val = ''
 
       if (keyCode === BackspaceKeyCode) {
@@ -247,23 +264,26 @@ export default {
       const points = val.match(new RegExp(/\./g))
       const hasRightPoint = (!points || points.length === 1)
 
-      console.log(hasRightPoint)
+      let hasRightOperator = false
+      const operators = val.match(new RegExp(/-/g))
+
+      if (operators && operators.length === 1) {
+        hasRightOperator = val.indexOf('-') === 0
+      } else if (!operators){
+        hasRightOperator = true
+      }
+
+      const { rowIndex, columnIndex } = this.cellClickIndex
 
       if (type === this.TABLE_CELL_TYPE_MAP.MONEY) {
-        if (!whiteList.includes(key) && keyCode !== BackspaceKeyCode && !hasRightPoint) {
+        if ((!whiteList.includes(key) && keyCode !== BackspaceKeyCode) || !hasRightPoint || !hasRightOperator) {
           e.preventDefault()
+        } else {
+          if (keyType === KEY_TYPE.UP) {
+            this.store.states.data[rowIndex][this.rowDataMap[columnIndex]] = e.target.value
+          }
         }
-      }
-    },
-    handlerCellInputKeyup (e, type) {
-      // const {key, keyCode, target} = e
-      // let val = target.value
-      // const points = val.match(new RegExp(/\./g))
-      // const hasRightPoint = (!points || points.length === 1)
-      //
-      // console.log(hasRightPoint)
-      if (type === this.TABLE_CELL_TYPE_MAP.MONEY) {
-        const { rowIndex, columnIndex } = this.cellClickIndex
+      } else {
         this.store.states.data[rowIndex][this.rowDataMap[columnIndex]] = e.target.value
       }
     }
@@ -275,72 +295,15 @@ export default {
 @import "../style/table";
 
 .ai-table__body {
+
   .ai-table__cell {
-    position: relative;
-    padding-left: 10px;
-    padding-right: 10px;
     text-align: left;
-  }
-
-  .ai-table__cell-pr30 {
-    padding-right: 30px;
-  }
-
-  .ai-table__cell__tip {
-    display: table;
-    position: absolute;
-    top: 0;
-    right: 6px;
-    height: 100%;
-    font-size: 12px;
-    color: #777;
-    cursor: pointer;
-    user-select: none;
-    z-index: 9;
-
-    &:hover {
-      color: #333;
-      text-decoration: underline;
-    }
-
-    .ai-table__cell__tip-text {
-      display: table-cell;
-      vertical-align: middle;
-    }
   }
 
   .el-table__body__row {
     &:hover {
       background-color: #eeeeee;
     }
-  }
-
-  .money-bg {
-    background: url("../assets/money_bg.png") repeat-y;
-  }
-
-  .money-cell {
-    text-align: right;
-    padding: 0;
-  }
-
-  .ai-table__money-text {
-    font-size: 15px;
-    overflow: hidden;
-    font-weight: bold;
-    letter-spacing: 11px;
-    position: relative;
-    right: -4px;
-    height: 24px;
-  }
-
-  .letter-space-none {
-    letter-spacing: 0;
-    right: 5px;
-  }
-
-  .ai-table__column {
-    position: relative;
   }
 
   .ai-table__body__input {
@@ -356,12 +319,6 @@ export default {
     font-size: 14px;
     color: #2E3033;
     font-weight: normal;
-  }
-
-  .ai-table__body__input-money {
-    font-size: 15px;
-    font-weight: bold;
-    text-align: right;
   }
 }
 </style>

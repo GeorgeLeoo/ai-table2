@@ -24,6 +24,8 @@ export default Vue.extend({
         operable: false,
         rowMouseEnterIndex: false,
         cellClickIndex: {rowIndex: -1, columnIndex: -1},
+        showSummary: false,
+        summaryText: '合计',
       }
     }
   },

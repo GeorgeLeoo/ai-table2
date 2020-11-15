@@ -56,6 +56,7 @@ export default {
       _columns: this.options.columns,
       originColumns: this.options.columns,
       allColumns: getAllColumns(this.options.columns),
+      showSummary: this.options.showSummary,
       data,
       _data: data,
       initRows,

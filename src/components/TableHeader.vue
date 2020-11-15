@@ -7,7 +7,7 @@
     :style="{width: layout.tableWidth}"
   >
     <colgroup>
-      <col v-if="operable" width="30">
+      <col v-if="operable" width="30px">
       <col
         v-for="row in columns"
         :key="row.label"
@@ -110,6 +110,10 @@ export default {
 @import "../style/table";
 
 .ai-table__header {
+
+  .ai-table__cell {
+    padding: 0;
+  }
 
   .ai-table__money-unit {
     background: url("../assets/money_bg.png") repeat-y;

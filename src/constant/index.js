@@ -10,3 +10,8 @@ const rowData = {
 }
 
 export const TABLE_ROW_DATA = JSON.parse(JSON.stringify(rowData))
+
+export const KEY_TYPE = {
+  UP: 0,
+  DOWN: 1,
+}

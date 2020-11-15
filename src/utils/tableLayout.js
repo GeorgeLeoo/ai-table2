@@ -47,6 +47,10 @@ class TableLayout {
     let usedWidth = 0
     let usedWidthLength = 0
 
+    if (this.store.states.operable) {
+      usedWidth += 30
+    }
+
     for (const column of _columns) {
       if (column.width) {
         usedWidth += parseWidth(column.width)
