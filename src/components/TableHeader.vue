@@ -36,7 +36,16 @@
           class="ai-table__cell"
           :style="{width: column.width}"
         >
-          <div class="ai-table__cell-text">{{column.label}}</div>
+          <div class="ai-table__cell-text">
+            <span class="ai-table__cell__tip-text">{{column.label}}</span>
+            <img
+              v-if="column.help && Object.keys(column.help).length > 0"
+              class="ai-table__cell-help-icon"
+              src="../assets/help.png"
+              alt=""
+              @click="handlerHelpClick($event, rowIndex, colIndex)"
+            >
+          </div>
           <div
             v-if="column.type === TABLE_CELL_TYPE_MAP.MONEY"
             class="ai-table__money-unit border-top"
@@ -55,7 +64,7 @@
 </template>
 <script>
 import { mapStates } from '../store/helper'
-import { convertToRows, getColumnsByColSpan } from '../utils'
+import { convertToRows, getColumnsByColSpan, getStyle } from '../utils'
 import { TABLE_CELL_TYPE_MAP, MONEY_UNIT_LIST } from '../constant'
 
 export default {
@@ -102,7 +111,11 @@ export default {
       this.layout.updateCellWidth(this.columns, this.MONEY_WIDTH)
     })
   },
-  methods: {}
+  methods: {
+    handlerHelpClick(e, rowIndex, colIndex) {
+      this.$emit('help', e, rowIndex, colIndex)
+    },
+  }
 }
 </script>
 
@@ -137,6 +150,18 @@ export default {
 
   .ai-table__cell {
     height: auto;
+  }
+
+  .ai-table__cell__tip-text {
+    vertical-align: middle;
+  }
+
+  .ai-table__cell-help-icon {
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    margin-top: -2px;
+    cursor: pointer;
   }
 }
 </style>

@@ -42,6 +42,11 @@ const columns = [
     // width: '340px',
     tip: '摘要',
     editable: true,
+    help: {
+      title: '标题1',
+      content: '1是一段内容,这是一段内容,这是一段内容,这是一段内容。',
+      theme: 'light'
+    }
   },
   {
     label: '会计科目',
@@ -51,9 +56,9 @@ const columns = [
     editable: true,
     canSelect: true,
     help: {
-      title: '',
-      content: '',
-      theme: 'light'
+      title: '标题',
+      content: '是一段内容,这是一段内容,这是一段内容,这是一段内容。',
+      theme: 'dark'
     }
   },
   {
@@ -64,6 +69,7 @@ const columns = [
     editable: true,
     editSize: '20px',
     editPosition: 'right',
+    summarized: true,
   },
   {
     label: '贷方金额',
@@ -73,6 +79,7 @@ const columns = [
     editable: true,
     editSize: '20px',
     editPosition: 'right',
+    summarized: true,
   },
 ]
 export default {
@@ -91,13 +98,13 @@ export default {
           {
             abstract: 'nm',
             subject: 'fhyt',
-            debtorMoney: '12345678912',
+            debtorMoney: '-6',
             creditorMoney: '-66.34',
           },
           {
             abstract: '到那时到那时到那时到那时到那时到那时到那时到那时到那时到那时32到那时到那时到那时到那时到那时到那时到那时到那时',
             subject: '到那时到那时到那时到那时到那时到那时到那时到那时到那时到那时32到那时到那时到那时到那时到那时到那时到那时到那时',
-            debtorMoney: '5555511111',
+            debtorMoney: '2',
             creditorMoney: '5345.22',
           },
         ]

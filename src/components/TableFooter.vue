@@ -28,9 +28,9 @@
         :key="columnIndex"
         :class="[
           'ai-table__column',
-          'border-left',
           'border-bottom',
           {'money-bg': column.type === TABLE_CELL_TYPE_MAP.MONEY},
+          {'border-left': column.value}
         ]"
         :style="{width: column.width}"
       >
@@ -79,8 +79,9 @@
 </template>
 <script>
 import { mapStates } from '../store/helper'
-import { convertToRows, getAllColumns, getColumnsByColSpan } from '../utils'
+import { convertToRows, getAllColumns, getColumnsByColSpan, parseNumber } from '../utils'
 import { TABLE_CELL_TYPE_MAP } from '../constant'
+import { isArray } from '../utils/dataType'
 
 export default {
   name: 'AiTableFooter',
@@ -102,6 +103,7 @@ export default {
       summaryData: [],
       columnRows: [],
       allColumns: [],
+      rowDataMap: {},
     }
   },
   computed: {
@@ -131,11 +133,16 @@ export default {
     formatMoney (val) {
       val = val.replaceAll('.', '')
       val = val.replaceAll('-', '')
+      val = val.replaceAll('-0', '')
+      if (val[0] && val[0] === '0') {
+        val = val.substring(1, val.length)
+      }
       return val
     }
   },
   created () {
     this.initData()
+    this.rowDataMap = this.setRowDataMap(this.data)
   },
   mounted () {
     this.$nextTick(() => {
@@ -143,21 +150,39 @@ export default {
     })
   },
   methods: {
+    setRowDataMap (data) {
+      let result = {}
+      if (isArray(data) && data.length > 0) {
+        const keys = Object.keys(data[0])
+        keys.forEach((column, index) => {
+          result[index] = column
+        })
+      }
+      return result
+    },
     initData () {
       this.columnRows = convertToRows(this.originColumns, this.columns)
       this.columns = getColumnsByColSpan(this.columnRows, 1)
       this.allColumns = getAllColumns(this.originColumns)
       this.summaryData = this.traverseToSummaryData()
+      this.store.states.summaryData = this.summaryData
     },
     traverseToSummaryData () {
       let data = this.allColumns
       const result = []
-      data.forEach((row, index) => {
+      data.forEach((row, rowIndex) => {
+        let summarized = row.summarized
         let value = ''
-        if (index === 0) {
+        if (rowIndex === 0) {
           value = this.store.states.summaryText
         } else {
-          value = '11'
+          if (summarized) {
+            let sum = 0
+            this.data.forEach(item => {
+              sum += parseNumber(item[row.prop])
+            })
+            value = sum + ''
+          }
         }
         result.push({
           tip: row.tip,

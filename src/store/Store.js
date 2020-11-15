@@ -26,6 +26,7 @@ export default Vue.extend({
         cellClickIndex: {rowIndex: -1, columnIndex: -1},
         showSummary: false,
         summaryText: '合计',
+        summaryData: [],
       }
     }
   },

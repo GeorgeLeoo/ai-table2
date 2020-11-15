@@ -54,7 +54,7 @@
           autofocus
           type="text"
           :value="column"
-          :style="{width: columns[columnIndex].width, display: column ? 'table-cell' : 'block'}"
+          :style="{display: column ? 'table-cell' : 'block'}"
           @keydown="handlerCellInputKeydown($event, columns[columnIndex].type)"
           @keyup="handlerCellInputKeyup($event, columns[columnIndex].type)"
           @keyup.enter="handlerCellInputEnter($event, columns[columnIndex].type)"
@@ -319,6 +319,7 @@ export default {
     font-size: 14px;
     color: #2E3033;
     font-weight: normal;
+    padding-left: 10px;
   }
 }
 </style>

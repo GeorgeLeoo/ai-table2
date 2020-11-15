@@ -8,6 +8,7 @@
       <table-header
         :store="store"
         :layout="layout"
+        @help="handlerHelp"
       />
     </div>
     <div class="ai-table__body-wrapper">
@@ -22,12 +23,14 @@
         :layout="layout"
       ></table-footer>
     </div>
+    <popover :data="help"></popover>
   </div>
 </template>
 <script>
 import TableHeader from './TableHeader'
 import TableBody from './TableBody'
 import TableFooter from './TableFooter'
+import Popover from './Popover'
 import { createStore } from '../store/helper'
 import { getAllColumns, getInitObject } from '../utils'
 import TableLayout from '../utils/tableLayout'
@@ -39,6 +42,7 @@ export default {
     TableHeader,
     TableBody,
     TableFooter,
+    Popover,
   },
   props: {
     options: {
@@ -67,16 +71,16 @@ export default {
       store: store,
       table: this,
       fit: this.fit,
-      showHeader: this.showHeader
+      showHeader: this.showHeader,
     })
 
     return {
       layout,
-      store
+      store,
+      help: {}
     }
   },
-  computed: {
-  },
+  computed: {},
   created () {
   },
   mounted () {
@@ -99,8 +103,16 @@ export default {
 
       return result
     },
-    handlerTableMouseLeave() {
+    handlerTableMouseLeave () {
       this.store.states.rowMouseEnterIndex = -1
+    },
+    handlerHelp (e, rowIndex, colIndex) {
+      const el = e.target.getBoundingClientRect()
+      const { left, top, height } = el
+      this.help = this.options.columns[colIndex].help
+      setTimeout(() => {
+        this.help = { ...this.help, top: top + height + 10, left: left }
+      }, 100)
     },
   }
 }
