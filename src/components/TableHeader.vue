@@ -7,16 +7,16 @@
     :style="{width: layout.tableWidth}"
   >
     <colgroup>
-      <col v-if="operable" width="30px">
+      <col v-if="layout.operable" width="30px">
       <col
         v-for="row in columns"
-        :key="row.label"
+        :key="row.key"
         :width="row.width"
       >
     </colgroup>
     <thead>
     <tr
-      v-for="(row, rowIndex) in columnRows"
+      v-for="(row, rowIndex) in originColumns"
       :key="rowIndex"
       class="ai-table__row"
     >
@@ -82,7 +82,6 @@ export default {
   data () {
     return {
       columnRows: [],
-      columns: [],
       TABLE_CELL_TYPE_MAP,
       MONEY_UNIT_LIST,
       MONEY_WIDTH: 220
@@ -90,25 +89,26 @@ export default {
   },
   computed: {
     ...mapStates({
+      columns: 'columns',
       originColumns: 'originColumns',
       operable: 'operable',
     }),
   },
   watch: {
-    originColumns: {
-      deep: true,
-      handler () {
-        this.columnRows = convertToRows(this.originColumns, this.columns)
-        this.columns = getColumnsByColSpan(this.originColumns)
-      }
-    }
+    // originColumns: {
+    //   deep: true,
+    //   handler () {
+    //     this.columnRows = convertToRows(this.originColumns, this.columns)
+    //     this.columns = getColumnsByColSpan(this.columnRows, 1)
+    //   }
+    // }
   },
   created () {
 
   },
   mounted () {
     this.$nextTick(() => {
-      this.layout.updateCellWidth(this.columns, this.MONEY_WIDTH)
+      // this.layout.updateCellWidth(this.columns, this.MONEY_WIDTH)
     })
   },
   methods: {

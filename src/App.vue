@@ -13,25 +13,24 @@ const columns = [
   //   label: '日期',
   //   prop: 'quantity'
   // },
-  // {
-  //   label: '配送信息',
-  //   prop: 'quantity',
-  //   children: [
-  //     {
-  //       label: '姓名',
-  //       prop: 'name',
-  //     },
-  //     {
-  //       label: '地址',
-  //       prop: 'addr'
-  //     },
-  //   ]
-  // },
+  {
+    label: '配送信息',
+    children: [
+      {
+        label: '姓名',
+        prop: 'name',
+      },
+      {
+        label: '地址',
+        prop: 'addr'
+      },
+    ]
+  },
   {
     label: '摘要',
     prop: 'abstract',
     // 单元格宽度，money类型 不能设置宽度
-    // width: '340px',
+    width: '340px',
     tip: '摘要',
     editable: true,
     help: {
@@ -108,16 +107,16 @@ export default {
         showSummary: true,
         data: [
           {
-            // name: 'dd2',
-            // addr: 'addr2',
+            name: 'dd2',
+            addr: 'addr2',
             abstract: 'nm',
             subject: 'fhyt',
             debtorMoney: '-6',
             creditorMoney: '-66.34',
           },
           {
-            // name: 'dd23',
-            // addr: 'addr23',
+            name: 'dd23',
+            addr: 'addr23',
             abstract: '到那时到那时到那时到那时到那时到那时到那时到那时到那时到那时32到那时到那时到那时到那时到那时到那时到那时到那时',
             subject: '到那时到那时到那时到那时到那时到那时到那时到那时到那时到那时32到那时到那时到那时到那时到那时到那时到那时到那时',
             debtorMoney: '2',
@@ -137,7 +136,7 @@ export default {
 
 <style lang="scss">
 * {
-  box-sizing: border-box;
+  //box-sizing: border-box;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

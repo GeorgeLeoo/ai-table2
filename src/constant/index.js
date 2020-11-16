@@ -15,3 +15,8 @@ export const KEY_TYPE = {
   UP: 0,
   DOWN: 1,
 }
+
+export const CELL_WIDTH = {
+  MONEY: 220,
+  OPERABLE: 30,
+}

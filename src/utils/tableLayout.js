@@ -1,5 +1,5 @@
 import { getStyle, parseWidth } from './index'
-import { TABLE_CELL_TYPE_MAP } from '../constant'
+import {CELL_WIDTH, TABLE_CELL_TYPE_MAP} from '../constant'
 
 class TableLayout {
   constructor (options) {
@@ -7,6 +7,8 @@ class TableLayout {
     this.store = null
     this.tableWidth = null
     this.tableHeight = null
+    // 表格是够可 添加/删除 行
+    this.operable = false
 
     for (let name in options) {
       if (options.hasOwnProperty(name)) {
@@ -23,7 +25,6 @@ class TableLayout {
     }
 
     this.resizeTable()
-
   }
 
   setTableWidth () {
@@ -39,32 +40,35 @@ class TableLayout {
     })
   }
 
-  updateCellWidth (columns = [], MONEY_WIDTH) {
-    console.log(columns)
-    let _columns = this.store.states._columns
+  updateCellWidth () {
+    this.store.commit('initStore')
 
-    let usedWidth = 0
-    let usedWidthLength = 0
+    let columns = this.store.states.columns
 
-    if (this.store.states.operable) {
-      usedWidth += 30
+    // 已占据宽度
+    let occupiedWidth = 0
+    let occupiedWidthLength = 0
+
+    if (this.operable) {
+      occupiedWidth += CELL_WIDTH.OPERABLE
     }
 
-    for (const column of _columns) {
+    for (const column of columns) {
       if (column.width) {
-        usedWidth += parseWidth(column.width)
-        usedWidthLength++
+        occupiedWidth += parseWidth(column.width)
+        occupiedWidthLength++
       } else if (column.type === TABLE_CELL_TYPE_MAP.MONEY) {
-        usedWidth += MONEY_WIDTH
-        usedWidthLength++
+        occupiedWidth += CELL_WIDTH.MONEY
+        occupiedWidthLength++
       }
     }
-    const averageWidth = (parseWidth(this.tableWidth) - usedWidth) / (columns.length - usedWidthLength) - columns.length - 1
+
+    const averageWidth = (parseWidth(this.tableWidth) - occupiedWidth) / (columns.length - occupiedWidthLength) - columns.length - 1
 
     for (const column of columns) {
       if (!column.width) {
         if (column.type === TABLE_CELL_TYPE_MAP.MONEY) {
-          this.table.$set(column, 'width', MONEY_WIDTH + 'px')
+          this.table.$set(column, 'width', CELL_WIDTH.MONEY + 'px')
         } else {
           this.table.$set(column, 'width', averageWidth + 'px')
         }

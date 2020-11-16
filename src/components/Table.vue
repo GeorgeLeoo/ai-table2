@@ -11,19 +11,19 @@
         @help="handlerHelp"
       />
     </div>
-    <div class="ai-table__body-wrapper">
-      <table-body
-        :store="store"
-        :layout="layout"
-        @cell-click="handlerCellClick"
-      ></table-body>
-    </div>
-    <div class="ai-table__footer-wrapper">
-      <table-footer
-        :store="store"
-        :layout="layout"
-      ></table-footer>
-    </div>
+<!--    <div class="ai-table__body-wrapper">-->
+<!--      <table-body-->
+<!--        :store="store"-->
+<!--        :layout="layout"-->
+<!--        @cell-click="handlerCellClick"-->
+<!--      ></table-body>-->
+<!--    </div>-->
+<!--    <div class="ai-table__footer-wrapper">-->
+<!--      <table-footer-->
+<!--        :store="store"-->
+<!--        :layout="layout"-->
+<!--      ></table-footer>-->
+<!--    </div>-->
     <popover :data="help"></popover>
     <ai-select
       :data="selectOptions"
@@ -56,33 +56,35 @@ export default {
     AiSelect,
   },
   props: {
+    /**
+     * 配置项
+     */
     options: {
       type: Object,
       default: () => { return {} }
     }
   },
   data () {
-    let operable = this.options.operable
-    let initRows = this.options.initRows
+    // let initRows = this.options.initRows
 
-    const data = this.getTableData(this.options.data, this.options.columns, initRows)
+    // const data = this.getTableData(this.options.data, this.options.columns, initRows)
 
     const store = createStore(this, {
       _columns: this.options.columns,
       originColumns: this.options.columns,
-      allColumns: getAllColumns(this.options.columns),
+      // allColumns: getAllColumns(this.options.columns),
       showSummary: this.options.showSummary,
-      data,
-      _data: data,
-      initRows,
-      operable
+      data: this.options.data,
+      initRows: this.options.initRows,
+      operable: this.options.operable
     })
+
+    // store.commit('initStore')
 
     const layout = new TableLayout({
       store: store,
       table: this,
-      fit: this.fit,
-      showHeader: this.showHeader,
+      operable: this.options.operable
     })
 
     return {
@@ -97,6 +99,9 @@ export default {
   },
   mounted () {
     this.layout.setTableWidth()
+    this.$nextTick(() => {
+      this.layout.updateCellWidth()
+    })
   },
   methods: {
     handlerClose() {

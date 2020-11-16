@@ -146,7 +146,7 @@ export default {
   },
   mounted () {
     this.$nextTick(() => {
-      this.layout.updateCellWidth(this.columns, this.MONEY_WIDTH)
+      // this.layout.updateCellWidth(this.columns, this.MONEY_WIDTH)
     })
   },
   methods: {
@@ -161,7 +161,7 @@ export default {
       return result
     },
     initData () {
-      this.columnRows = convertToRows(this.originColumns, this.columns)
+      // this.columnRows = convertToRows(this.originColumns, this.columns)
       this.columns = getColumnsByColSpan(this.columnRows, 1)
       this.allColumns = getAllColumns(this.originColumns)
       this.summaryData = this.traverseToSummaryData()

@@ -16,6 +16,61 @@ export const getAllColumns = (columns) => {
   return result
 }
 
+/**
+ * 获得所有有用的列
+ * @param columns
+ * @returns {[]}
+ */
+export const getUsefulColumns = (columns) => {
+  const result = []
+  const usedColumns = []
+
+  const traverse = (column) => {
+    if (column.children) {
+      column.children.forEach((subColumn) => {
+        traverse(subColumn)
+      })
+    } else if (column.prop) {
+      if (!usedColumns.includes(column.key)) {
+        usedColumns.push(column.key)
+        result.push(column)
+      }
+    }
+  }
+
+  columns.forEach((column) => {
+    traverse(column)
+  })
+
+  return result
+}
+
+/**
+ *
+ * @param columns
+ */
+export const setColumnIdentity = (columns) => {
+  const prefix = 'column-'
+  let count = 0
+
+  const traverse = (column) => {
+    if (column.children) {
+      column.key = prefix + count++
+
+      column.children.forEach((subColumn) => {
+        traverse(subColumn)
+      })
+    } else {
+      column.key = prefix + count++
+    }
+  }
+
+  columns.forEach((column) => {
+    traverse(column)
+  })
+
+}
+
 export const convertToRows = (originColumns) => {
   // 最大层级
   let maxLevel = 1
@@ -84,25 +139,6 @@ export const getColumnsByColSpan = (rowColumns, colSpan) => {
   return result
 }
 
-export const getUsageColumns = (originColumns) => {
-  const result = []
-
-  const traverse = (column) => {
-    if (column.children) {
-      column.children.forEach((subColumn) => {
-        traverse(subColumn, column)
-      })
-    } else {
-      result.push(column)
-    }
-  }
-
-  originColumns.forEach((column) => {
-    traverse(column)
-  })
-  return result
-}
-
 export const getStyle = function (ele, attr) {
   if (ele.currentStyle) {
     return ele.currentStyle[attr]
@@ -117,7 +153,7 @@ export const getStyle = function (ele, attr) {
  * @param config
  * @returns {{}}
  */
-export function mergeOptions (defaults, config) {
+export function mergeOptions(defaults, config) {
   const options = {}
   let key
   for (key in defaults) {
@@ -139,9 +175,10 @@ export function mergeOptions (defaults, config) {
  * @param width
  * @returns {number}
  */
-export function parseWidth (width) {
+export function parseWidth(width) {
   if (width !== undefined) {
     width = width.replace('px', '')
+    width = parseInt(width, 10)
     if (isNaN(width)) {
       width = null
     }
@@ -154,7 +191,7 @@ export function parseWidth (width) {
  * @param minWidth
  * @returns {number}
  */
-export function parseMinWidth (minWidth) {
+export function parseMinWidth(minWidth) {
   if (typeof minWidth !== 'undefined') {
     minWidth = parseWidth(minWidth)
     if (isNaN(minWidth)) {
@@ -169,7 +206,7 @@ export function parseMinWidth (minWidth) {
  * @param height
  * @returns {string|null|number}
  */
-export function parseHeight (height) {
+export function parseHeight(height) {
   if (typeof height === 'number') {
     return height
   }
@@ -183,7 +220,7 @@ export function parseHeight (height) {
   return null
 }
 
-export function getInitObject (columns) {
+export function getInitObject(columns) {
   const result = {}
   for (const item of columns) {
     result[item.prop] = ''
@@ -191,7 +228,7 @@ export function getInitObject (columns) {
   return result
 }
 
-export function parseNumber (val, fix) {
+export function parseNumber(val, fix) {
   let times = Math.pow(10, (fix || 4) / 1)
   val = val / 1
   if (isNaN(val)) {
