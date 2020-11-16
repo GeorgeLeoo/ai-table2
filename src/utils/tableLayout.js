@@ -9,6 +9,7 @@ class TableLayout {
     this.tableHeight = null
     // 表格是够可 添加/删除 行
     this.operable = false
+    this.summaryFontSize = '14px'
 
     for (let name in options) {
       if (options.hasOwnProperty(name)) {

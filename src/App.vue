@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <ai-table :options="tableOptions"/>
+    <ai-table
+      :options="tableOptions"
+      @cell-click="handlerCellClick"
+    />
   </div>
 </template>
 
@@ -22,7 +25,7 @@ const columns = [
       },
       {
         label: '地址',
-        prop: 'addr'
+        prop: 'addr',
       },
     ]
   },
@@ -105,6 +108,7 @@ export default {
         columns,
         operable: true,
         showSummary: true,
+        summaryTextSize: '16px',
         data: [
           {
             name: 'dd2',
@@ -127,9 +131,9 @@ export default {
     }
   },
   methods: {
-    handlerAdd() {
-      console.log(11)
-    }
+    handlerCellClick(data) {
+      console.log(data)
+    },
   },
 }
 </script>

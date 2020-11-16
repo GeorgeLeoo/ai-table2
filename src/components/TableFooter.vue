@@ -8,18 +8,18 @@
     :style="{width: layout.tableWidth}"
   >
     <colgroup>
-      <col v-if="operable" width="30px">
+      <col v-if="layout.operable" width="30px">
       <col
-        v-for="(row, index) in summaryData"
-        :key="index"
+        v-for="row in columns"
+        :key="row.key"
         :width="row.width"
       >
     </colgroup>
     <tfoot>
     <tr
-      class="el-table__body__row"
+      class="el-table__footer__row"
     >
-      <td v-if="operable" class="ai-table__operation">
+      <td v-if="layout.operable" class="ai-table__operation">
         <div class="ai-table__operation-inner"></div>
       </td>
 
@@ -29,8 +29,8 @@
         :class="[
           'ai-table__column',
           'border-bottom',
+          column.value ? 'border-left': 'border-left-transparent',
           {'money-bg': column.type === TABLE_CELL_TYPE_MAP.MONEY},
-          {'border-left': column.value}
         ]"
         :style="{width: column.width}"
       >
@@ -40,9 +40,10 @@
             v-if="column.type !== TABLE_CELL_TYPE_MAP.MONEY"
             :class="[
               'ai-table__cell',
+              'summary-text',
               {'ai-table__cell-pr30': columns.tip},
               ]"
-            :style="{width: column.width, display: column ? 'table-cell' : 'block'}">
+            :style="{width: column.width, display: 'table-cell'}">
             {{column.value}}
           </div>
 
@@ -66,12 +67,6 @@
             </div>
           </div>
         </template>
-
-        <!--  tip 区域      -->
-<!--        <div-->
-<!--          class="ai-table__cell__tip">-->
-<!--          <span class="ai-table__cell__tip-text">{{column.tip}}</span>-->
-<!--        </div>-->
       </td>
     </tr>
     </tfoot>
@@ -79,9 +74,8 @@
 </template>
 <script>
 import { mapStates } from '../store/helper'
-import { convertToRows, getAllColumns, getColumnsByColSpan, parseNumber } from '../utils'
+import { parseNumber } from '../utils'
 import { TABLE_CELL_TYPE_MAP } from '../constant'
-import { isArray } from '../utils/dataType'
 
 export default {
   name: 'AiTableFooter',
@@ -98,21 +92,15 @@ export default {
   data () {
     return {
       TABLE_CELL_TYPE_MAP,
-      MONEY_WIDTH: 220,
-      columns: [],
       summaryData: [],
-      columnRows: [],
-      allColumns: [],
-      rowDataMap: {},
     }
   },
   computed: {
     ...mapStates({
+      columns: 'columns',
+      rowDataMap: 'rowDataMap',
       originColumns: 'originColumns',
       data: 'data',
-      operable: 'operable',
-      rowMouseEnterIndex: 'rowMouseEnterIndex',
-      cellClickIndex: 'cellClickIndex',
     })
   },
   watch: {
@@ -142,33 +130,16 @@ export default {
   },
   created () {
     this.initData()
-    this.rowDataMap = this.setRowDataMap(this.data)
   },
   mounted () {
-    this.$nextTick(() => {
-      // this.layout.updateCellWidth(this.columns, this.MONEY_WIDTH)
-    })
   },
   methods: {
-    setRowDataMap (data) {
-      let result = {}
-      if (isArray(data) && data.length > 0) {
-        const keys = Object.keys(data[0])
-        keys.forEach((column, index) => {
-          result[index] = column
-        })
-      }
-      return result
-    },
     initData () {
-      // this.columnRows = convertToRows(this.originColumns, this.columns)
-      this.columns = getColumnsByColSpan(this.columnRows, 1)
-      this.allColumns = getAllColumns(this.originColumns)
       this.summaryData = this.traverseToSummaryData()
       this.store.states.summaryData = this.summaryData
     },
     traverseToSummaryData () {
-      let data = this.allColumns
+      let data = this.columns
       const result = []
       data.forEach((row, rowIndex) => {
         let summarized = row.summarized
@@ -206,6 +177,9 @@ export default {
 .ai-table__footer {
   .ai-table__cell {
     text-align: left;
+  }
+  .summary-text {
+    font-weight: bold;
   }
 }
 </style>

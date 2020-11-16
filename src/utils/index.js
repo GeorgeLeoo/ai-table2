@@ -238,3 +238,6 @@ export function parseNumber(val, fix) {
   }
 }
 
+export function resetCellClickIndex(states) {
+  states.cellClickIndex = { rowIndex: -1, columnIndex: -1 }
+}

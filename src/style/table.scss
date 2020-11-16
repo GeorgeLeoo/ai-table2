@@ -1,4 +1,33 @@
 .ai-table {
+  font-size: 0;
+  table {
+    border-collapse:collapse
+  }
+
+  .ai-table__cell {
+    width: 100%;
+    min-width: 14px;
+    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 14px;
+    vertical-align: middle;
+    height: 60px;
+    white-space: normal;
+    word-break: break-all;
+    line-height: 23px;
+    //box-sizing: border-box;
+  }
+
+  td {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .ai-table__cell-text {
+    //width: 100%;
+    padding: 0 10px;
+  }
   .border-top-left {
     border-top: 1px solid #333;
     border-left: 1px solid #333;
@@ -15,6 +44,10 @@
 
   .border-left {
     border-left: 1px solid #333;
+  }
+
+  .border-left-transparent {
+    border-left: 1px solid transparent;
   }
 
   .border-right {
@@ -37,19 +70,6 @@
     color: red;
   }
 
-  .ai-table__cell {
-    vertical-align: middle;
-    height: 60px;
-    white-space: normal;
-    word-break: break-all;
-    line-height: 23px;
-  }
-
-  td {
-    display: table-cell;
-    vertical-align: middle;
-  }
-
   .text-right {
     text-align: right !important;
   }
@@ -67,13 +87,6 @@
         cursor: pointer;
       }
     }
-  }
-
-  .ai-table__cell {
-    position: relative;
-    padding-left: 10px;
-    padding-right: 10px;
-    font-size: 14px;
   }
 
   .ai-table__input-money {

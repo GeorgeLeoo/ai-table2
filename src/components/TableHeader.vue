@@ -34,10 +34,9 @@
       >
         <div
           class="ai-table__cell"
-          :style="{width: column.width}"
         >
           <div class="ai-table__cell-text">
-            <span class="ai-table__cell__tip-text">{{column.label}}</span>
+            {{column.label}}
             <img
               v-if="column.help && Object.keys(column.help).length > 0"
               class="ai-table__cell-help-icon"
@@ -49,7 +48,7 @@
           <div
             v-if="column.type === TABLE_CELL_TYPE_MAP.MONEY"
             class="ai-table__money-unit border-top"
-            :style="{width: column.width}">
+          >
                 <span
                   v-for="(unit, unitIndex) in MONEY_UNIT_LIST"
                   :key="unitIndex"
@@ -64,7 +63,6 @@
 </template>
 <script>
 import { mapStates } from '../store/helper'
-import { convertToRows, getColumnsByColSpan, getStyle } from '../utils'
 import { TABLE_CELL_TYPE_MAP, MONEY_UNIT_LIST } from '../constant'
 
 export default {
@@ -95,22 +93,9 @@ export default {
     }),
   },
   watch: {
-    // originColumns: {
-    //   deep: true,
-    //   handler () {
-    //     this.columnRows = convertToRows(this.originColumns, this.columns)
-    //     this.columns = getColumnsByColSpan(this.columnRows, 1)
-    //   }
-    // }
   },
-  created () {
-
-  },
-  mounted () {
-    this.$nextTick(() => {
-      // this.layout.updateCellWidth(this.columns, this.MONEY_WIDTH)
-    })
-  },
+  created () {},
+  mounted () {},
   methods: {
     handlerHelpClick(e, rowIndex, colIndex) {
       this.$emit('help', e, rowIndex, colIndex)

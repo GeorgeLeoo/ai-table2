@@ -7,10 +7,10 @@
     :style="{width: layout.tableWidth}"
   >
     <colgroup>
-      <col v-if="operable" width="30px">
+      <col v-if="layout.operable" width="30px">
       <col
         v-for="row in columns"
-        :key="row.label"
+        :key="row.key"
         :width="row.width"
       >
     </colgroup>
@@ -21,7 +21,7 @@
       class="el-table__body__row"
       @mouseenter="handlerRowMouseEnter(rowIndex)"
     >
-      <td v-if="operable" class="ai-table__operation">
+      <td v-if="layout.operable" class="ai-table__operation">
         <div class="ai-table__operation-inner">
           <template v-if="rowMouseEnterIndex === rowIndex">
             <img class="ai-table__operation-inner__icon" src="../assets/add.png" alt=""
@@ -31,75 +31,79 @@
           </template>
         </div>
       </td>
-      <td
-        v-for="(column, columnIndex) in row"
-        :key="columnIndex"
-        :class="[
+      <template v-for="(column, columnIndex) in row">
+
+        <td
+          v-if="columns[columnIndex]"
+          :key="columnIndex"
+          :class="[
           'ai-table__column',
           'border-left',
           'border-bottom',
           {'money-bg': columns[columnIndex].type === TABLE_CELL_TYPE_MAP.MONEY},
         ]"
-        :style="{width: columns[columnIndex].width}"
-        @click="handlerCellClick($event, rowIndex, columnIndex)"
-      >
-        <input
-          v-if="cellClickIndex.rowIndex === rowIndex && cellClickIndex.columnIndex === columnIndex"
-          :class="[
+          :style="{width: columns[columnIndex].width}"
+          @click="handlerCellClick($event, rowIndex, columnIndex)"
+        >
+          <input
+            v-if="cellClickIndex.rowIndex === rowIndex && cellClickIndex.columnIndex === columnIndex"
+            :class="[
             'ai-table__body__input',
             {'ai-table__input-money': columns[columnIndex].type === TABLE_CELL_TYPE_MAP.MONEY},
             {'pr30': columns[columnIndex].tip},
             ]"
-          ref="ai-table__body__input"
-          autofocus
-          type="text"
-          :value="column"
-          :style="{display: column ? 'table-cell' : 'block'}"
-          @keydown="handlerCellInputKeydown($event, columns[columnIndex].type)"
-          @keyup="handlerCellInputKeyup($event, columns[columnIndex].type)"
-          @keyup.enter="handlerCellInputEnter($event, columns[columnIndex].type)"
-        >
+            ref="ai-table__body__input"
+            autofocus
+            type="text"
+            :value="column"
+            :style="{display: 'table-cell'}"
+            @keydown="handlerCellInputKeydown($event, columns[columnIndex].type)"
+            @keyup="handlerCellInputKeyup($event, columns[columnIndex].type)"
+            @keyup.enter="handlerCellInputEnter($event, columns[columnIndex].type)"
+          >
+          <!--          :style="{display: column ? 'table-cell' : 'block'}"-->
 
-        <template v-else>
-          <!--  type 不为 money      -->
-          <div
-            v-if="columns[columnIndex].type !== TABLE_CELL_TYPE_MAP.MONEY"
-            :class="[
+          <template v-else>
+            <!--  type 不为 money      -->
+            <div
+              v-if="columns[columnIndex].type !== TABLE_CELL_TYPE_MAP.MONEY"
+              :class="[
               'ai-table__cell',
               {'ai-table__cell-pr30': columns[columnIndex].tip},
               ]"
-            :style="{width: columns[columnIndex].width, display: column ? 'table-cell' : 'block'}">
-            {{column}}
-          </div>
+              :style="{width: columns[columnIndex].width, display: 'table-cell'}">
+              {{column}}
+            </div>
 
-          <!--  type 为 money      -->
-          <div
-            v-else
-            :class="[
+            <!--  type 为 money      -->
+            <div
+              v-else
+              :class="[
             'ai-table__cell',
             {'money-cell': columns[columnIndex].type === TABLE_CELL_TYPE_MAP.MONEY}
           ]"
-            :style="{width: columns[columnIndex].width, display: column ? 'table-cell' : 'block'}">
-            <div
-              :class="[
+              :style="{width: columns[columnIndex].width, display: column ? 'table-cell' : 'block'}">
+              <div
+                :class="[
                 'ai-table__money-text',
                  {'letter-space-none': column.length > 11},
                  {'red': column.includes('-')}
                 ]"
-              :style="{width: columns[columnIndex].width, display: column ? 'table-cell' : 'block'}"
-            >
-              {{column | formatMoney}}
+                :style="{width: columns[columnIndex].width, display: column ? 'table-cell' : 'block'}"
+              >
+                {{column | formatMoney}}
+              </div>
             </div>
-          </div>
-        </template>
+          </template>
 
-        <!--  tip 区域      -->
-        <div
-          v-if="rowMouseEnterIndex === rowIndex"
-          class="ai-table__cell__tip">
-          <span class="ai-table__cell__tip-text">{{columns[columnIndex].tip}}</span>
-        </div>
-      </td>
+          <!--  tip 区域      -->
+          <div
+            v-if="rowMouseEnterIndex === rowIndex"
+            class="ai-table__cell__tip">
+            <span class="ai-table__cell__tip-text">{{columns[columnIndex].tip}}</span>
+          </div>
+        </td>
+      </template>
     </tr>
     </tbody>
   </table>
@@ -107,8 +111,6 @@
 <script>
 import { KEY_TYPE, MONEY_UNIT_LIST, TABLE_CELL_TYPE_MAP } from '../constant'
 import { mapStates } from '../store/helper'
-import { convertToRows, getColumnsByColSpan, getInitObject } from '../utils'
-import { isArray } from '../utils/dataType'
 
 export default {
   name: 'AiTableBody',
@@ -125,36 +127,28 @@ export default {
   data () {
     return {
       columnRows: [],
-      columns: [],
       TABLE_CELL_TYPE_MAP,
       MONEY_UNIT_LIST,
       MONEY_WIDTH: 220,
-      tableData: [],
-      rowDataMap: {}
-      // rowMouseEnterIndex: -1
+      tableData: []
     }
   },
   computed: {
     ...mapStates({
+      columns: 'columns',
+      rowDataMap: 'rowDataMap',
       originColumns: 'originColumns',
       data: 'data',
       initRows: 'initRows',
-      operable: 'operable',
       rowMouseEnterIndex: 'rowMouseEnterIndex',
       cellClickIndex: 'cellClickIndex',
     })
   },
   watch: {
-    originColumns: {
-      deep: true,
-      handler () {
-        this.initData()
-      }
-    },
     data: {
       deep: true,
       handler (val) {
-        this.tableData = this.traverseRowToColumns(val)
+        this.setTableData(val)
       }
     }
   },
@@ -166,31 +160,28 @@ export default {
     }
   },
   created () {
-    this.initData()
-    this.tableData = this.traverseRowToColumns(this.data)
-    this.rowDataMap = this.setRowDataMap(this.data)
-    this.store.states.rowDataMap = this.rowDataMap
+    this.setTableData(this.data)
+    this.store.commit('setRowDataMap')
   },
-  mounted () {
-    this.$nextTick(() => {
-      // this.layout.updateCellWidth(this.columns, this.MONEY_WIDTH)
-    })
-  },
+  mounted () {},
   methods: {
-    setRowDataMap (data) {
-      let result = {}
-      if (isArray(data) && data.length > 0) {
-        const keys = Object.keys(data[0])
-        keys.forEach((column, index) => {
-          result[index] = column
-        })
-      }
-      return result
+    /**
+     * 设置 tableData
+     * 要渲染的表格数据
+     * @param {[]}data 数据源
+     */
+    setTableData (data) {
+      this.tableData = this.traverseRowToColumns(data)
     },
-    initData () {
-      // this.columnRows = convertToRows(this.originColumns, this.columns)
-      this.columns = getColumnsByColSpan(this.columnRows, 1)
-    },
+    /**
+     * 将 源数据 转换为 数组，用于单元格的渲染
+     * [
+     *  [ '1', 'a', 'v' ],
+     *  [ 'b', 'n', 'g' ],
+     * ]
+     * @param data 数据源
+     * @returns {[]}
+     */
     traverseRowToColumns (data) {
       let result = []
       data.forEach(row => {
@@ -203,92 +194,71 @@ export default {
       })
       return result
     },
+    /**
+     * 鼠标进入某一行
+     * @param index 选中的行号
+     */
     handlerRowMouseEnter (index) {
-      this.store.states.rowMouseEnterIndex = index
+      this.store.commit('rowMouseEnter', index)
     },
+    /**
+     * 添加行
+     * @param index 行号
+     */
     handlerAddRow (index) {
-      this.store.states.data.splice(index, 0, getInitObject(this.originColumns))
+      this.store.commit('addRow', index)
     },
+    /**
+     * 删除行
+     * @param index 行号
+     */
     handlerRemoveRow (index) {
-      this.store.states.data.splice(index, 1)
+      this.store.commit('removeRow', index)
     },
+    /**
+     * 单元格点击
+     * @param $event
+     * @param rowIndex
+     * @param columnIndex
+     */
     handlerCellClick ($event, rowIndex, columnIndex) {
-      this.store.states.cellClickIndex = { rowIndex, columnIndex }
+      this.store.commit('setCellClickIndex', { rowIndex, columnIndex })
 
-      this.$nextTick(() => {
-        this.$refs['ai-table__body__input'][0].focus()
-      })
+      this.inputFocus()
 
       this.$emit('cell-click', $event, rowIndex, columnIndex)
     },
+    /**
+     * 输入框聚焦
+     */
+    inputFocus () {
+      this.$nextTick(() => {
+        this.$refs['ai-table__body__input'][0].focus()
+      })
+    },
+    /**
+     * 输入框 回车
+     * @param e
+     * @param type
+     */
     handlerCellInputEnter (e, type) {
-      let value = e.target.value
-      let val = ''
-      if (type === this.TABLE_CELL_TYPE_MAP.MONEY) {
-
-        val = Number(value).toFixed(2)
-
-        const splits = val.split('.')
-
-        // 对 0 的处理
-        if (splits[0] === '0') {
-          val = splits[1]
-          if (val === '00') {
-            val = '0'
-          }
-        }
-
-      } else {
-        val = value
-      }
-      const { rowIndex, columnIndex } = this.cellClickIndex
-      this.store.states.data[rowIndex][this.rowDataMap[columnIndex]] = val
-      this.store.states.cellClickIndex = { rowIndex: -1, columnIndex: -1 }
+      this.store.commit('setData', { e, type })
     },
+    /**
+     * 输入框 keydown
+     * @param e
+     * @param type
+     */
     handlerCellInputKeydown (e, type) {
-      this.inputInterception(e, type, KEY_TYPE.DOWN)
+      this.store.commit('inputInterception', { e, type, keyType: KEY_TYPE.DOWN })
     },
+    /**
+     * 输入框 keyup
+     * @param e
+     * @param type
+     */
     handlerCellInputKeyup (e, type) {
-      this.inputInterception(e, type, KEY_TYPE.UP)
-    },
-    inputInterception(e, type, keyType) {
-      const whiteList = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '.', 'Backspace']
-      const BackspaceKeyCode = 8
-
-      const { key, keyCode, target } = e
-      let val = ''
-
-      if (keyCode === BackspaceKeyCode) {
-        val = target.value.substring(0, target.value.length - 1)
-      } else {
-        val = target.value + key
-      }
-
-      const points = val.match(new RegExp(/\./g))
-      const hasRightPoint = (!points || points.length === 1)
-
-      let hasRightOperator = false
-      const operators = val.match(new RegExp(/-/g))
-
-      if (operators && operators.length === 1) {
-        hasRightOperator = val.indexOf('-') === 0
-      } else if (!operators){
-        hasRightOperator = true
-      }
-
-      const { rowIndex, columnIndex } = this.cellClickIndex
-
-      if (type === this.TABLE_CELL_TYPE_MAP.MONEY) {
-        if ((!whiteList.includes(key) && keyCode !== BackspaceKeyCode) || !hasRightPoint || !hasRightOperator) {
-          e.preventDefault()
-        } else {
-          if (keyType === KEY_TYPE.UP) {
-            this.store.states.data[rowIndex][this.rowDataMap[columnIndex]] = e.target.value
-          }
-        }
-      } else {
-        this.store.states.data[rowIndex][this.rowDataMap[columnIndex]] = e.target.value
-      }
+      this.store.commit('inputInterception', { e, type, keyType: KEY_TYPE.UP })
     }
   }
 }
