@@ -1,7 +1,7 @@
 <template>
   <div>
     <transition
-      :name="transition"
+      name="fade-in-linear"
       @after-enter="handleAfterEnter"
       @after-leave="handleAfterLeave">
       <div
@@ -42,11 +42,7 @@ export default {
     data: {
       type: Object,
       default: null
-    },
-    transition: {
-      type: String,
-      default: 'fade-in-linear'
-    },
+    }
   },
   data () {
     return {
@@ -75,7 +71,7 @@ export default {
   created () {},
   mounted () {
     window.addEventListener('click', (e) => {
-      if (!e.target.className.includes('ai-table__cell-help-icon')) {
+      if (!e.target.className.includes('ai-table__cell-help-icon') && !e.target.className.includes('ai-popover')) {
         this.showPopover = false
       }
     })
@@ -132,6 +128,7 @@ export default {
 
 <style scoped lang="scss">
 @import "../style/table";
+@import "../style/transition";
 
 .ai-popover {
   position: absolute;

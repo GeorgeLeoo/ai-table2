@@ -99,7 +99,7 @@ export default {
       deep: true,
       handler () {
         this.columnRows = convertToRows(this.originColumns, this.columns)
-        this.columns = getColumnsByColSpan(this.columnRows, 1)
+        this.columns = getColumnsByColSpan(this.originColumns)
       }
     }
   },

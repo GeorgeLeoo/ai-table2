@@ -6,6 +6,8 @@
 
 <script>
 import Table from './components/Table'
+import Button from './components/Button'
+import json from './json/index.json'
 const columns = [
   // {
   //   label: '日期',
@@ -17,21 +19,11 @@ const columns = [
   //   children: [
   //     {
   //       label: '姓名',
-  //       prop: 'quantity',
+  //       prop: 'name',
   //     },
   //     {
   //       label: '地址',
-  //       prop: 'quantity',
-  //       children: [
-  //         {
-  //           label: '省份',
-  //           prop: 'quantity',
-  //         },
-  //         {
-  //           label: '邮编',
-  //           prop: 'quantity',
-  //         },
-  //       ]
+  //       prop: 'addr'
   //     },
   //   ]
   // },
@@ -59,6 +51,26 @@ const columns = [
       title: '标题',
       content: '是一段内容,这是一段内容,这是一段内容,这是一段内容。',
       theme: 'dark'
+    },
+    select: {
+      list: [
+        {
+          key: '1',
+          value: '蛋糕',
+        },
+        {
+          key: '2',
+          value: '奶茶',
+        },
+        {
+          key: '3',
+          value: '蛋糕1',
+        },
+      ],
+      component: Button,
+      loadmore: function (){
+        this.list = this.list.concat(json)
+      }
     }
   },
   {
@@ -90,18 +102,22 @@ export default {
   data () {
     return {
       tableOptions: {
-        initRows: 5,
+        initRows: 2,
         columns,
         operable: true,
         showSummary: true,
         data: [
           {
+            // name: 'dd2',
+            // addr: 'addr2',
             abstract: 'nm',
             subject: 'fhyt',
             debtorMoney: '-6',
             creditorMoney: '-66.34',
           },
           {
+            // name: 'dd23',
+            // addr: 'addr23',
             abstract: '到那时到那时到那时到那时到那时到那时到那时到那时到那时到那时32到那时到那时到那时到那时到那时到那时到那时到那时',
             subject: '到那时到那时到那时到那时到那时到那时到那时到那时到那时到那时32到那时到那时到那时到那时到那时到那时到那时到那时',
             debtorMoney: '2',
@@ -110,7 +126,12 @@ export default {
         ]
       }
     }
-  }
+  },
+  methods: {
+    handlerAdd() {
+      console.log(11)
+    }
+  },
 }
 </script>
 
@@ -142,7 +163,6 @@ ul {
 }
 
 li {
-  display: inline-block;
   margin: 0 10px;
 }
 

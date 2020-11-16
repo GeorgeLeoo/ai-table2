@@ -27,6 +27,7 @@ export default Vue.extend({
         showSummary: false,
         summaryText: '合计',
         summaryData: [],
+        rowDataMap: [],
       }
     }
   },

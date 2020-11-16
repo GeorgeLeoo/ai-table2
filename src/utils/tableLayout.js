@@ -39,11 +39,10 @@ class TableLayout {
     })
   }
 
-  updateCellWidth () {
-    let originColumns = this.store.states.originColumns
+  updateCellWidth (columns = [], MONEY_WIDTH) {
+    console.log(columns)
     let _columns = this.store.states._columns
 
-    let MONEY_WIDTH = 220
     let usedWidth = 0
     let usedWidthLength = 0
 
@@ -60,9 +59,9 @@ class TableLayout {
         usedWidthLength++
       }
     }
-    const averageWidth = (parseWidth(this.tableWidth) - usedWidth) / (originColumns.length - usedWidthLength) - originColumns.length - 1
+    const averageWidth = (parseWidth(this.tableWidth) - usedWidth) / (columns.length - usedWidthLength) - columns.length - 1
 
-    for (const column of originColumns) {
+    for (const column of columns) {
       if (!column.width) {
         if (column.type === TABLE_CELL_TYPE_MAP.MONEY) {
           this.table.$set(column, 'width', MONEY_WIDTH + 'px')

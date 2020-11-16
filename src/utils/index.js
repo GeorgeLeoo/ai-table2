@@ -84,6 +84,25 @@ export const getColumnsByColSpan = (rowColumns, colSpan) => {
   return result
 }
 
+export const getUsageColumns = (originColumns) => {
+  const result = []
+
+  const traverse = (column) => {
+    if (column.children) {
+      column.children.forEach((subColumn) => {
+        traverse(subColumn, column)
+      })
+    } else {
+      result.push(column)
+    }
+  }
+
+  originColumns.forEach((column) => {
+    traverse(column)
+  })
+  return result
+}
+
 export const getStyle = function (ele, attr) {
   if (ele.currentStyle) {
     return ele.currentStyle[attr]
@@ -122,7 +141,7 @@ export function mergeOptions (defaults, config) {
  */
 export function parseWidth (width) {
   if (width !== undefined) {
-    width = parseInt(width, 10)
+    width = width.replace('px', '')
     if (isNaN(width)) {
       width = null
     }

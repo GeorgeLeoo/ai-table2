@@ -15,6 +15,7 @@
       <table-body
         :store="store"
         :layout="layout"
+        @cell-click="handlerCellClick"
       ></table-body>
     </div>
     <div class="ai-table__footer-wrapper">
@@ -24,6 +25,12 @@
       ></table-footer>
     </div>
     <popover :data="help"></popover>
+    <ai-select
+      :data="selectOptions"
+      @select="handlerSelect"
+      @loadmore="handlerSelectLoadMore"
+      @close="handlerClose"
+    ></ai-select>
   </div>
 </template>
 <script>
@@ -31,10 +38,13 @@ import TableHeader from './TableHeader'
 import TableBody from './TableBody'
 import TableFooter from './TableFooter'
 import Popover from './Popover'
+import AiSelect from './Select'
 import { createStore } from '../store/helper'
 import { getAllColumns, getInitObject } from '../utils'
 import TableLayout from '../utils/tableLayout'
 import { TABLE_CELL_TYPE_MAP } from '../constant'
+import {getSelectData} from "../api";
+import {isFunction} from "../utils/dataType";
 
 export default {
   name: 'AiTable',
@@ -43,6 +53,7 @@ export default {
     TableBody,
     TableFooter,
     Popover,
+    AiSelect,
   },
   props: {
     options: {
@@ -77,7 +88,8 @@ export default {
     return {
       layout,
       store,
-      help: {}
+      help: {},
+      selectOptions: {},
     }
   },
   computed: {},
@@ -87,9 +99,32 @@ export default {
     this.layout.setTableWidth()
   },
   methods: {
+    handlerClose() {
+      this.selectOptions = {}
+    },
+    handlerSelect(item) {
+      const {rowIndex, columnIndex} = this.store.states.cellClickIndex
+      const rowDataMap = this.store.states.rowDataMap
+      this.store.states.data[rowIndex][rowDataMap[columnIndex]] = item.value
+      this.$emit('select', item)
+    },
+    handlerCellClick(e, rowIndex, columnIndex) {
+      const el = e.target.getBoundingClientRect()
+
+      this.setSelectData(el, rowIndex, columnIndex)
+
+      this.$emit('cell-click', e, rowIndex, columnIndex)
+    },
+    setSelectData(el, rowIndex, columnIndex) {
+      const { left, top, width, height } = el
+      this.selectOptions = Object.assign({left, top, elWidth: width, elHeight: height}, {...this.options.columns[columnIndex].select})
+    },
+    handlerSelectLoadMore() {
+      isFunction(this.selectOptions.loadmore) && this.selectOptions.loadmore()
+    },
     getTableData (data, columns, initRows) {
       let result = []
-      if (data.length < initRows) {
+      if (initRows && data.length < initRows) {
         for (let i = 0; i < initRows; i++) {
           if (data[i] && Object.keys(data[i]).length > 0) {
             result.push(data[i])
@@ -98,7 +133,7 @@ export default {
           }
         }
       } else {
-        result = this.data
+        result = data
       }
 
       return result
@@ -107,6 +142,7 @@ export default {
       this.store.states.rowMouseEnterIndex = -1
     },
     handlerHelp (e, rowIndex, colIndex) {
+      this.help = {}
       const el = e.target.getBoundingClientRect()
       const { left, top, height } = el
       this.help = this.options.columns[colIndex].help

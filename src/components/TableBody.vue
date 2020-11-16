@@ -41,7 +41,7 @@
           {'money-bg': columns[columnIndex].type === TABLE_CELL_TYPE_MAP.MONEY},
         ]"
         :style="{width: columns[columnIndex].width}"
-        @click="handlerCellClick(rowIndex, columnIndex)"
+        @click="handlerCellClick($event, rowIndex, columnIndex)"
       >
         <input
           v-if="cellClickIndex.rowIndex === rowIndex && cellClickIndex.columnIndex === columnIndex"
@@ -169,6 +169,7 @@ export default {
     this.initData()
     this.tableData = this.traverseRowToColumns(this.data)
     this.rowDataMap = this.setRowDataMap(this.data)
+    this.store.states.rowDataMap = this.rowDataMap
   },
   mounted () {
     this.$nextTick(() => {
@@ -211,12 +212,14 @@ export default {
     handlerRemoveRow (index) {
       this.store.states.data.splice(index, 1)
     },
-    handlerCellClick (rowIndex, columnIndex) {
+    handlerCellClick ($event, rowIndex, columnIndex) {
       this.store.states.cellClickIndex = { rowIndex, columnIndex }
 
       this.$nextTick(() => {
         this.$refs['ai-table__body__input'][0].focus()
       })
+
+      this.$emit('cell-click', $event, rowIndex, columnIndex)
     },
     handlerCellInputEnter (e, type) {
       let value = e.target.value
@@ -293,6 +296,7 @@ export default {
 
 <style scoped lang="scss">
 @import "../style/table";
+@import "../style/transition";
 
 .ai-table__body {
 
@@ -301,6 +305,8 @@ export default {
   }
 
   .el-table__body__row {
+    transition: all 0.3s ease;
+
     &:hover {
       background-color: #eeeeee;
     }
