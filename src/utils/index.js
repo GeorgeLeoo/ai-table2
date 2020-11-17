@@ -241,3 +241,19 @@ export function parseNumber(val, fix) {
 export function resetCellClickIndex(states) {
   states.cellClickIndex = { rowIndex: -1, columnIndex: -1 }
 }
+
+export function merge(target) {
+  for (let i = 1, j = arguments.length; i < j; i++) {
+    let source = arguments[i] || {};
+    for (let prop in source) {
+      if (source.hasOwnProperty(prop)) {
+        let value = source[prop];
+        if (value !== undefined) {
+          target[prop] = value;
+        }
+      }
+    }
+  }
+
+  return target;
+}
