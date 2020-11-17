@@ -16,6 +16,7 @@
         :store="store"
         :layout="layout"
         @cell-click="handlerCellClick"
+        @cell-input-enter="handlerCellInputEnter"
       ></table-body>
     </div>
     <div class="ai-table__footer-wrapper">
@@ -99,6 +100,9 @@ export default {
     })
   },
   methods: {
+    handlerCellInputEnter() {
+      this.handlerSelectClose()
+    },
     /**
      * select 关闭事件
      */
@@ -134,7 +138,14 @@ export default {
      */
     setSelectData(el, rowIndex, columnIndex) {
       const { left, top, width, height } = el
-      this.selectOptions = Object.assign({left, top, elWidth: width, elHeight: height}, {...this.options.columns[columnIndex].select})
+      if (this.options.columns[columnIndex]) {
+        this.selectOptions = Object.assign({
+          left,
+          top,
+          elWidth: width,
+          elHeight: height
+        }, { ...this.options.columns[columnIndex].select })
+      }
     },
     /**
      * select 加载更多

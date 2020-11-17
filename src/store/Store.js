@@ -63,14 +63,8 @@ Vue.prototype.mutations = {
 
       val = Number(value).toFixed(2)
 
-      const splits = val.split('.')
-
-      // 对 0 的处理
-      if (splits[0] === '0') {
-        val = splits[1]
-        if (val === '00') {
-          val = '0'
-        }
+      if (val === '0.00') {
+        val = ''
       }
 
     } else {
@@ -114,13 +108,14 @@ Vue.prototype.mutations = {
     if (keyCode === BackspaceKeyCode) {
       val = target.value.substring(0, target.value.length - 1)
     } else {
-      val = target.value + key
+      val = target.value
     }
 
     const points = val.match(new RegExp(/\./g))
     const hasRightPoint = (!points || points.length === 1)
 
     let hasRightOperator = false
+
     const operators = val.match(new RegExp(/-/g))
 
     if (operators && operators.length === 1) {
@@ -128,9 +123,7 @@ Vue.prototype.mutations = {
     } else if (!operators){
       hasRightOperator = true
     }
-
     const { rowIndex, columnIndex } = states.cellClickIndex
-
     if (type === TABLE_CELL_TYPE_MAP.MONEY) {
       if ((!whiteList.includes(key) && keyCode !== BackspaceKeyCode) || !hasRightPoint || !hasRightOperator) {
         e.preventDefault()

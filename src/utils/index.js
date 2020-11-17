@@ -140,7 +140,7 @@ export const getColumnsByColSpan = (rowColumns, colSpan) => {
 }
 
 export const getStyle = function (ele, attr) {
-  if (ele.currentStyle) {
+  if (ele && ele.currentStyle) {
     return ele.currentStyle[attr]
   } else {
     return getComputedStyle(ele)[attr]
@@ -229,13 +229,7 @@ export function getInitObject(columns) {
 }
 
 export function parseNumber(val, fix) {
-  let times = Math.pow(10, (fix || 4) / 1)
-  val = val / 1
-  if (isNaN(val)) {
-    return 0
-  } else {
-    return Math.round(val * times) / times
-  }
+  return val / 1 * 100
 }
 
 export function resetCellClickIndex(states) {

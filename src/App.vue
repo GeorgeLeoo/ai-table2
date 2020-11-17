@@ -115,7 +115,7 @@ export default {
             addr: 'addr2',
             abstract: 'nm',
             subject: 'fhyt',
-            debtorMoney: '-6',
+            debtorMoney: '0.2',
             creditorMoney: '-66.34',
           },
           {
@@ -123,7 +123,7 @@ export default {
             addr: 'addr23',
             abstract: '到那时到那时到那时到那时到那时到那时到那时到那时到那时到那时32到那时到那时到那时到那时到那时到那时到那时到那时',
             subject: '到那时到那时到那时到那时到那时到那时到那时到那时到那时到那时32到那时到那时到那时到那时到那时到那时到那时到那时',
-            debtorMoney: '2',
+            debtorMoney: '0.2',
             creditorMoney: '5345.22',
           },
         ]
@@ -132,7 +132,7 @@ export default {
   },
   methods: {
     handlerCellClick(data) {
-      console.log(data)
+      // console.log(data)
     },
   },
 }

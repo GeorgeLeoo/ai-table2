@@ -18,10 +18,10 @@
     <tr
       v-for="(row, rowIndex) in originColumns"
       :key="rowIndex"
-      class="ai-table__row"
+      class="ai-table__row ai-table__header__row"
     >
-      <th v-if="operable" class="ai-table__operation">
-        <div class="ai-table__operation-inner"></div>
+      <th v-if="operable" class="ai-table__operation ai-table__header__key">
+        <div class="ai-table__operation-inner ai-table__header__key"></div>
       </th>
       <th
         v-for="(column, colIndex) in row"
@@ -29,17 +29,17 @@
         :colspan="column.colSpan"
         :rowspan="column.rowSpan"
         :style="{width: column.width}"
-        class="ai-table__column border-left border-bottom"
+        class="ai-table__column border-left border-bottom ai-table__header__key"
         :class="[ {'border-top': column.level === 1 }]"
       >
         <div
-          class="ai-table__cell"
+          class="ai-table__cell ai-table__header__key"
         >
-          <div class="ai-table__cell-text">
+          <div class="ai-table__cell-text ai-table__header__key">
             {{column.label}}
             <img
               v-if="column.help && Object.keys(column.help).length > 0"
-              class="ai-table__cell-help-icon"
+              class="ai-table__cell-help-icon ai-table__header__key"
               src="../assets/help.png"
               alt=""
               @click="handlerHelpClick($event, rowIndex, colIndex)"
@@ -47,12 +47,12 @@
           </div>
           <div
             v-if="column.type === TABLE_CELL_TYPE_MAP.MONEY"
-            class="ai-table__money-unit border-top"
+            class="ai-table__money-unit border-top ai-table__header__key"
           >
                 <span
                   v-for="(unit, unitIndex) in MONEY_UNIT_LIST"
                   :key="unitIndex"
-                  class="ai-table__money-unit__item"
+                  class="ai-table__money-unit__item ai-table__header__key"
                 >{{unit}}</span>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { getStyle, parseWidth } from './index'
 import {CELL_WIDTH, TABLE_CELL_TYPE_MAP} from '../constant'
+import { throttle } from 'throttle-debounce';
 
 class TableLayout {
   constructor (options) {
@@ -33,12 +34,12 @@ class TableLayout {
   }
 
   resizeTable () {
-    window.addEventListener('resize', () => {
+    window.addEventListener('resize', throttle(300, () => {
       this.setTableWidth()
 
       this.store.states.originColumns = JSON.parse(JSON.stringify(this.store.states._columns))
       this.updateCellWidth()
-    })
+    }))
   }
 
   updateCellWidth () {

@@ -84,6 +84,12 @@ export default {
         this.$emit('close')
       }
     })
+
+    window.addEventListener('keyup', (e) => {
+      if (this.list && this.list.length > 0 && e.keyCode === 38 || e.keyCode === 40) {
+
+      }
+    })
   },
   methods: {
     handlerSelect(item) {

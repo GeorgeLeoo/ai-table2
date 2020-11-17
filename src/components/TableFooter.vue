@@ -1,7 +1,7 @@
 <template>
   <table
     v-if="store.states.showSummary"
-    class="ai-table__footer border-right"
+    class="ai-table__footer border-right summary"
     cellpadding="0"
     cellspacing="0"
     border="0"
@@ -17,9 +17,9 @@
     </colgroup>
     <tfoot>
     <tr
-      class="el-table__footer__row"
+      class="el-table__footer__row summary"
     >
-      <td v-if="layout.operable" class="ai-table__operation">
+      <td v-if="layout.operable" class="ai-table__operation summary">
         <div class="ai-table__operation-inner"></div>
       </td>
 
@@ -28,6 +28,7 @@
         :key="columnIndex"
         :class="[
           'ai-table__column',
+          'summary',
           'border-bottom',
           column.value ? 'border-left': 'border-left-transparent',
           {'money-bg': column.type === TABLE_CELL_TYPE_MAP.MONEY},
@@ -52,19 +53,19 @@
             v-else
             :class="[
             'ai-table__cell',
+            'summary',
             {'money-cell': column.type === TABLE_CELL_TYPE_MAP.MONEY}
           ]"
             :style="{width: column.width, display: column.value ? 'table-cell' : 'block'}">
             <div
               :class="[
                 'ai-table__money-text',
+                'summary',
                  {'letter-space-none': column.value.length > 11},
                  {'red': column.value.includes('-')}
                 ]"
               :style="{width: column.width, display: column.value ? 'table-cell' : 'block'}"
-            >
-              {{column.value | formatMoney}}
-            </div>
+            >{{column.value | formatMoney}}</div>
           </div>
         </template>
       </td>
@@ -76,6 +77,8 @@
 import { mapStates } from '../store/helper'
 import { parseNumber } from '../utils'
 import { TABLE_CELL_TYPE_MAP } from '../constant'
+import { debounce, throttle } from 'throttle-debounce';
+
 
 export default {
   name: 'AiTableFooter',
@@ -112,21 +115,13 @@ export default {
     },
     data: {
       deep: true,
-      handler (val) {
+      handler () {
+        // this.debounceTraverseToSummaryData()
         this.summaryData = this.traverseToSummaryData()
       }
     }
   },
   filters: {
-    formatMoney (val) {
-      val = val.replaceAll('.', '')
-      val = val.replaceAll('-', '')
-      val = val.replaceAll('-0', '')
-      if (val[0] && val[0] === '0') {
-        val = val.substring(1, val.length)
-      }
-      return val
-    }
   },
   created () {
     this.initData()
@@ -137,6 +132,11 @@ export default {
     initData () {
       this.summaryData = this.traverseToSummaryData()
       this.store.states.summaryData = this.summaryData
+    },
+    debounceTraverseToSummaryData() {
+      return throttle(300, () => {
+        this.summaryData = this.traverseToSummaryData()
+      })
     },
     traverseToSummaryData () {
       let data = this.columns
@@ -152,7 +152,7 @@ export default {
             this.data.forEach(item => {
               sum += parseNumber(item[row.prop])
             })
-            value = sum + ''
+            value = sum / 100 + ''
           }
         }
         result.push({

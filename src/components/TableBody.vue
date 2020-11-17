@@ -111,6 +111,7 @@
 <script>
 import { KEY_TYPE, MONEY_UNIT_LIST, TABLE_CELL_TYPE_MAP } from '../constant'
 import { mapStates } from '../store/helper'
+import { resetCellClickIndex } from '../utils'
 
 export default {
   name: 'AiTableBody',
@@ -153,17 +154,27 @@ export default {
     }
   },
   filters: {
-    formatMoney (val) {
-      val = val.replaceAll('.', '')
-      val = val.replaceAll('-', '')
-      return val
-    }
+
   },
   created () {
     this.setTableData(this.data)
     this.store.commit('setRowDataMap')
   },
-  mounted () {},
+  mounted () {
+    window.addEventListener('click', (e) => {
+      if (
+        (
+          !e.target.className.includes('ai-table__column')
+        && !e.target.className.includes('ai-table__cell')
+        && !e.target.className.includes('ai-table__money-text')
+        )
+        || (e.target.className.includes('summary'))
+        || (e.target.className.includes('ai-table__header__key'))
+      ) {
+        resetCellClickIndex(this.store.states)
+      }
+    })
+  },
   methods: {
     /**
      * 设置 tableData
@@ -243,6 +254,7 @@ export default {
      */
     handlerCellInputEnter (e, type) {
       this.store.commit('setData', { e, type })
+      this.$emit('cell-input-enter')
     },
     /**
      * 输入框 keydown
