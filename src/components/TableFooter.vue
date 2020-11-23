@@ -152,7 +152,7 @@ export default {
             this.data.forEach(item => {
               sum += parseNumber(item[row.prop])
             })
-            value = sum / 100 + ''
+            value = sum + ''
           }
         }
         result.push({

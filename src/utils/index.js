@@ -229,7 +229,7 @@ export function getInitObject(columns) {
 }
 
 export function parseNumber(val, fix) {
-  return val / 1 * 100
+  return val / 1
 }
 
 export function resetCellClickIndex(states) {
