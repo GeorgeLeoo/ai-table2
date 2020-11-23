@@ -1,10 +1,11 @@
 {
   "name": "ai-table",
-  "description": "A Vue.js project",
+  "description": "table",
   "version": "1.0.0",
   "author": "GeorgeLeoo <georgeleeo@163.com>",
   "license": "MIT",
-  "private": true,
+  "private": false,
+  "main": "./dist/ai-table.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"

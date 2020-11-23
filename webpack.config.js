@@ -1,12 +1,16 @@
 var path = require('path')
 var webpack = require('webpack')
+const NODE_ENV = process.env.NODE_ENV
 
 module.exports = {
-  entry: './src/main.js',
+  entry: NODE_ENV === 'development' ? './src/main.js' : './index.js',
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
-    filename: 'build.js'
+    filename: 'ai-table.js',
+    library: 'ai-table',
+    libraryTarget: "umd",
+    umdNamedDefine: true
   },
   module: {
     rules: [
@@ -87,7 +91,6 @@ module.exports = {
 }
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports.devtool = '#source-map'
   // http://vue-loader.vuejs.org/en/workflow/production.html
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
@@ -105,4 +108,6 @@ if (process.env.NODE_ENV === 'production') {
       minimize: true
     })
   ])
+} else {
+  module.exports.devtool = '#source-map'
 }
